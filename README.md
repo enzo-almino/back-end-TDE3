@@ -5,3 +5,4 @@ Projeto back-end para TDE3.
 
 ## Como usar
 Consulte a documentação do projeto.
+

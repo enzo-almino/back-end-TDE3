@@ -1,3 +1,4 @@
+-- 1. TABELA DE USUÁRIOS
 CREATE TABLE usuarios (
     id SERIAL PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -8,20 +9,20 @@ CREATE TABLE usuarios (
     criado_em TIMESTAMP DEFAULT NOW()
 );
 
+-- 2. TABELA DE PACOTES (Atualizada com suas alterações)
 CREATE TABLE pacotes (
     id SERIAL PRIMARY KEY,
     titulo VARCHAR(100) NOT NULL,
-    descricao TEXT,
     tipo_transporte VARCHAR(20) NOT NULL CHECK (tipo_transporte IN ('Avião', 'Ônibus', 'Cruzeiro')),
     preco DECIMAL(10,2) NOT NULL CHECK (preco > 0),
     vagas_totais INT NOT NULL CHECK (vagas_totais >= 0),
     vagas_disponiveis INT NOT NULL CHECK (vagas_disponiveis >= 0),
-    data_ida TIMESTAMP NOT NULL,
-    data_volta TIMESTAMP,
-    imagem_url TEXT,
-    CONSTRAINT check_datas CHECK (data_volta IS NULL OR data_volta >= data_ida)
+    data_ida TIMESTAMP NOT NULL,           
+    data_volta TIMESTAMP,                 
+    CONSTRAINT check_datas CHECK (data_volta IS NULL OR data_volta >= data_ida) 
 );
 
+-- 3. TABELA DE RESERVAS
 CREATE TABLE reservas (
     id SERIAL PRIMARY KEY,
     usuario_id INT REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -31,7 +32,9 @@ CREATE TABLE reservas (
     status_pagamento VARCHAR(20) DEFAULT 'Confirmado'
 );
 
--- Funções e Triggers de Vagas
+-- 4. FUNÇÕES E TRIGGERS DE VAGAS
+
+-- Trigger para quando uma reserva for feita
 CREATE OR REPLACE FUNCTION gerenciar_vaga_insert()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -47,6 +50,7 @@ CREATE TRIGGER trg_reserva_feita
 BEFORE INSERT ON reservas
 FOR EACH ROW EXECUTE FUNCTION gerenciar_vaga_insert();
 
+-- Trigger para quando uma reserva for deletada
 CREATE OR REPLACE FUNCTION gerenciar_vaga_delete()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -58,6 +62,3 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_reserva_cancelada
 AFTER DELETE ON reservas
 FOR EACH ROW EXECUTE FUNCTION gerenciar_vaga_delete();
-
--- Para criar o primeiro admin, execute após cadastrar um usuário:
--- UPDATE usuarios SET nivel_acesso = 'admin' WHERE email = 'seu@email.com';

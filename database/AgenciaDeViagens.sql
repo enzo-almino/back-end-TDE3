@@ -16,10 +16,10 @@ CREATE TABLE pacotes (
     preco DECIMAL(10,2) NOT NULL CHECK (preco > 0),
     vagas_totais INT NOT NULL CHECK (vagas_totais >= 0),
     vagas_disponiveis INT NOT NULL CHECK (vagas_disponiveis >= 0),
-    data_ida DATE NOT NULL,
-    data_volta DATE NOT NULL,
+    data_ida TIMESTAMP NOT NULL,
+    data_volta TIMESTAMP,
     imagem_url TEXT,
-    CONSTRAINT check_datas CHECK (data_volta >= data_ida)
+    CONSTRAINT check_datas CHECK (data_volta IS NULL OR data_volta >= data_ida)
 );
 
 CREATE TABLE reservas (

@@ -5,8 +5,11 @@ Sistema web de gerenciamento de viagens, desenvolvido em PHP com arquitetura MVC
 ## Funcionalidades
 
 - Cadastro e login de usuários com senha criptografada (bcrypt)
-- CRUD completo de viagens (criar, listar, editar, excluir)
+- Controle de acesso por nível (admin e cliente)
+- CRUD completo de viagens (criar, listar, editar, excluir) — restrito a admins
 - Sistema de reservas com código localizador gerado automaticamente
+- Admin pode visualizar e excluir todas as reservas
+- Admin pode promover clientes a admin
 - Validação de preços mínimos por tipo de transporte
 - Validação de vagas mínimas por tipo de transporte
 - Controle de vagas disponíveis (decrementadas automaticamente via trigger)
@@ -21,6 +24,11 @@ Autenticação:
 - CPF deve conter exatamente 11 dígitos numéricos
 - Email e CPF são únicos (não permite duplicados)
 - Só usuários logados podem ver e gerenciar viagens
+
+Níveis de acesso:
+
+- **Admin**: Pode criar, editar e excluir viagens; visualizar e excluir reservas de todos; promover clientes a admin
+- **Cliente** (padrão): pode visualizar viagens e fazer reservas
 
 Preços mínimos por transporte:
 
@@ -55,6 +63,7 @@ Reservas:
 
 - Cada reserva gera um código localizador único de 6 caracteres
 - O status padrão da reserva é "Confirmado"
+- Admin pode excluir qualquer reserva
 
 Exclusão:
 
@@ -67,15 +76,17 @@ Exclusão:
 ├── database/AgenciaDeViagens.sql # Script de criação do banco
 ├── models/
 │   ├── PacoteModel.php           # CRUD de viagens
-│   ├── UsuarioModel.php          # Cadastro e busca de usuários
-│   └── ReservaModel.php          # Criação e listagem de reservas
+│   ├── UsuarioModel.php          # Cadastro, busca e promoção de usuários
+│   └── ReservaModel.php          # Criação, listagem e exclusão de reservas
 ├── controllers/
-│   ├── PacoteController.php      # Lógica de viagens + validações
+│   ├── PacoteController.php      # Lógica de viagens + validações (admin)
 │   ├── AuthController.php        # Login, cadastro e logout
-│   └── ReservaController.php     # Reservar e listar reservas
+│   ├── ReservaController.php     # Reservar, listar e excluir reservas
+│   └── AdminController.php       # Gerenciamento de usuários (admin)
 ├── views/
 │   ├── pacotes/                  # Listar, criar, editar viagens
-│   ├── reservas/                 # Minhas reservas
+│   ├── reservas/                 # Minhas reservas + todas (admin)
+│   ├── admin/                    # Gerenciar usuários
 │   └── auth/                     # Login e cadastro
 ├── routes/web.php                # Roteador
 └── index.php                     # Ponto de entrada
@@ -92,6 +103,11 @@ php -S localhost:8000
 ```
 
 4. Acesse `http://localhost:8000`
+5. Cadastre um usuário e promova-o a admin via SQL:
+
+```sql
+UPDATE usuarios SET nivel_acesso = 'admin' WHERE email = 'seu@email.com';
+```
 
 ## Tecnologias
 

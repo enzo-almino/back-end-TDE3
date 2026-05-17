@@ -6,9 +6,21 @@ class PacoteController
 {
     private PacoteModel $model;
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        $this->model = new PacoteModel();
+        if (empty($_SESSION['usuario_id'])) {
+            header('Location: index.php?route=auth&action=login');
+            exit;
+        }
+        $this->model = new PacoteModel($pdo);
+    }
+
+    private function exigirAdmin(): void
+    {
+        if (($_SESSION['nivel_acesso'] ?? '') !== 'admin') {
+            header('Location: index.php?route=pacotes');
+            exit;
+        }
     }
 
     private function validarPrecoMinimo(array $dados): ?string
@@ -61,6 +73,7 @@ class PacoteController
 
     public function criar(): void
     {
+        $this->exigirAdmin();
         $erro = null;
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -96,6 +109,7 @@ class PacoteController
 
     public function editar(): void
     {
+        $this->exigirAdmin();
         $erro = null;
         $id = (int) ($_GET['id'] ?? 0);
         $pacote = $this->model->buscarPorId($id);
@@ -138,7 +152,14 @@ class PacoteController
 
     public function excluir(): void
     {
-        $id = (int) ($_GET['id'] ?? 0);
+        $this->exigirAdmin();
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php?route=pacotes');
+            exit;
+        }
+
+        $id = (int) ($_POST['id'] ?? 0);
         $this->model->excluir($id);
         header('Location: index.php?route=pacotes');
         exit;

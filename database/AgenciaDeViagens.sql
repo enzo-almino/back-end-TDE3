@@ -58,3 +58,6 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_reserva_cancelada
 AFTER DELETE ON reservas
 FOR EACH ROW EXECUTE FUNCTION gerenciar_vaga_delete();
+
+-- Para criar o primeiro admin, execute após cadastrar um usuário:
+-- UPDATE usuarios SET nivel_acesso = 'admin' WHERE email = 'seu@email.com';

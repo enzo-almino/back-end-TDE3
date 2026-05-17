@@ -18,3 +18,5 @@ try {
 } catch (PDOException $e) {
     die("Falha ao conectar ao Supabase: " . $e->getMessage());
 }
+
+return $pdo;

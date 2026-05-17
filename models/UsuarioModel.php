@@ -1,14 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../config/conexao.php';
-
 class UsuarioModel
 {
     private PDO $pdo;
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        global $pdo;
         $this->pdo = $pdo;
     }
 
@@ -31,5 +28,17 @@ class UsuarioModel
             'senha' => password_hash($dados['senha'], PASSWORD_BCRYPT),
             'cpf'   => $dados['cpf'],
         ]);
+    }
+
+    public function promover(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE usuarios SET nivel_acesso = 'admin' WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+
+    public function listarClientes(): array
+    {
+        $stmt = $this->pdo->query("SELECT id, nome, email FROM usuarios WHERE nivel_acesso = 'cliente' ORDER BY nome");
+        return $stmt->fetchAll();
     }
 }

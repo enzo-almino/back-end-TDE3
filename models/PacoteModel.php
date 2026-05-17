@@ -1,14 +1,11 @@
 <?php
 
-require_once __DIR__ . '/../config/conexao.php';
-
 class PacoteModel
 {
     private PDO $pdo;
 
-    public function __construct()
+    public function __construct(PDO $pdo)
     {
-        global $pdo;
         $this->pdo = $pdo;
     }
 

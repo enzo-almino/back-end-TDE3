@@ -5,10 +5,10 @@ require_once __DIR__ . '/../models/UsuarioModel.php';
 class AuthController
 {
     private UsuarioModel $model;
-    
-    public function __construct()
+
+    public function __construct(PDO $pdo)
     {
-        $this->model = new UsuarioModel();
+        $this->model = new UsuarioModel($pdo);
     }
 
     public function login(): void
